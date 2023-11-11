@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+<h1>Категории заявок</h1>
+<a href="{% url 'base'%}">Вернуться обратно</a><br>
+<a href="{% url 'create_category'%}">Создать</a><br><br>
+{% for ap in category %}
+<ul>
+    <li>{{ap.name}}</li>
+    <a href="{% url 'category_delete' ap.id %}">Удалить</a><br><br>
+</ul>
+{% endfor %}

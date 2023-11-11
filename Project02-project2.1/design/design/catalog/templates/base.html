@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+    <div class="sidebar-nav" style="margin: 20px 0 0 20px">
+      {% block sidebar %}
+        {% if user.is_superuser %}
+            <h2>Страница администратора</h2>
+            <a href="{% url 'superadmin'%}">Просмотр заявок пользователей</a><br>
+            <a href="{% url 'category'%}">Категории</a><br>
+            <p><a href="{% url 'profil' %}">Личный кабинет</a></p>
+            <a href="{% url 'logout'%}">Выход</a><br>
+        {% else %}
+        <nav>
+            <p><a href="{% url 'index' %}">Главная</a></p>
+            {% if user.is_authenticated %}
+            <p><a href="{% url 'profil' %}">Личный кабинет</a></p>
+                <p><a href="{% url 'request' %}">Добавить заявку</a></p>
+                <p><a href="{% url 'logout' %}">Выход</a></p>
+            {% else %}
+                <p><a href="{% url 'login' %}">Вход</a></p>
+                <p><a href="{% url 'register'%}">Регистрация</a></p>
+            {% endif %}
+              {% endif %}
+            {% endblock %}
+       </nav>
+    </div>
+    <div style="margin-left: 50px">{% block content %}{% endblock %}</div>
+
+    {% block head %}
+{% if application_list%}
+        {% if user.is_superuser %}
+            <h1>Список заявок пользователей</h1>
+        {% else %}
+            <h1>Список заявок</h1><br>
+            <h2>Количество заявок, находящихся в статусе «Принято в работу»: {{ num_application }}</h2><br>
+        {% endif %}
+      {% for ap in application_list %}
+
+        <ul>
+            <p>Временная метка:{{ap.date}}</p>
+            <p>Название: {{ ap.title }}</p>
+            <p>Категория: {{ap.category}}</p>
+            <img src="{{ ap.photo_file.url}}" width="400px", height="350px"><br>
+            {% if user.is_superuser %}
+                {% if ap.status == 'Новая' %}
+                    <a href="{% url 'change_status' ap.id %}">Сменить статус</a>
+                {% endif %}
+            {% endif %}
+
+        </ul><br><br><br>
+      {% endfor %}
+
+    {% endif %}
+
+{% endblock %}
+
+
+
+
+</div>
+</body>
+</html>
